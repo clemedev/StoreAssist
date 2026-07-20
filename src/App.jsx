@@ -1,35 +1,91 @@
+import {
+  useState,
+} from 'react';
+
+import Dashboard from './components/Dashboard/Dashboard.jsx';
+
+import {
+  seedDemoData,
+} from './lib/demoData.js';
+
+import {
+  clearStoreAssistData,
+} from './lib/store.js';
+
 import styles from './App.module.css';
 
 export default function App() {
+  const [
+    refreshKey,
+    setRefreshKey,
+  ] = useState(0);
+
+  function refreshDashboard() {
+    setRefreshKey(
+      (current) =>
+        current + 1,
+    );
+  }
+
+  function handleLoadDemo() {
+    seedDemoData({
+      dayCount: 14,
+    });
+
+    refreshDashboard();
+  }
+
+  function handleClearData() {
+    clearStoreAssistData();
+    refreshDashboard();
+  }
+
   return (
-    <main className={styles.page}>
-      <section className={styles.hero}>
-        <div
-          className={styles.logo}
-          aria-hidden="true"
-        >
-          SA
+    <div className={styles.application}>
+      <header className={styles.topbar}>
+        <a className={styles.brand} href="/">
+          <span
+            className={styles.brandMark}
+            aria-hidden="true"
+          >
+            SA
+          </span>
+
+          <span>
+            <strong>
+              StoreAssist
+            </strong>
+
+            <small>
+              Smart business assistant
+            </small>
+          </span>
+        </a>
+
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={handleClearData}
+          >
+            Clear data
+          </button>
+
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={handleLoadDemo}
+          >
+            Load demo data
+          </button>
         </div>
+      </header>
 
-        <p className={styles.eyebrow}>
-          Smart business workspace
-        </p>
-
-        <h1>StoreAssist</h1>
-
-        <p className={styles.description}>
-          Manage sales, expenses, inventory,
-          and customer payments from one
-          straightforward workspace.
-        </p>
-
-        <div className={styles.paymentMethods}>
-          <span>Cash</span>
-          <span>QR</span>
-          <span>Credit card</span>
-          <span>Debit card</span>
-        </div>
-      </section>
-    </main>
+      <main className={styles.main}>
+        <Dashboard
+          refreshKey={refreshKey}
+        />
+      </main>
+    </div>
   );
 }
